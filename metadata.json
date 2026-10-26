@@ -1,0 +1,6 @@
+{
+  "name": "مکتبہ حکیم الامت - Maktaba Hakim ul Ummat",
+  "description": "مکمل اردو اسلامی کتب خانہ برائے مطالعہ کتب حکیم الامت مولانا اشرف علی تھانویؒ، شیخ الاسلام مفتی تقی عثمانی، درس نظامی، اور اکابرین دیوبند",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
