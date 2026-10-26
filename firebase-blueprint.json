@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account and profile data",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User unique ID" },
+        "name": { "type": "string", "description": "User display name in Urdu or English" },
+        "email": { "type": "string", "description": "User email address" },
+        "photoURL": { "type": "string", "description": "User avatar photo URL" },
+        "createdAt": { "type": "string", "description": "Account creation timestamp" }
+      },
+      "required": ["uid", "name", "email"]
+    },
+    "BookDocument": {
+      "title": "BookDocument",
+      "description": "Book catalog document in Maktaba Hakim ul Ummat",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Book ID" },
+        "title": { "type": "string", "description": "Book title in Urdu" },
+        "author": { "type": "string", "description": "Author name in Urdu" },
+        "category": { "type": "string", "description": "One of the 9 Urdu categories" },
+        "description": { "type": "string", "description": "Mukhtasar Taaruf" },
+        "pages": { "type": "number", "description": "Total pages count" },
+        "coverUrl": { "type": "string", "description": "Book cover image URL" },
+        "pdfUrl": { "type": "string", "description": "Backblaze B2 or online PDF URL" },
+        "pdfFileName": { "type": "string", "description": "Backblaze B2 filename in Maktabah-hkeem-ul-ummat" },
+        "readsCount": { "type": "number", "description": "Number of times read" },
+        "rating": { "type": "number", "description": "Rating score out of 5" },
+        "publishedYear": { "type": "string", "description": "Year of publication" },
+        "publisher": { "type": "string", "description": "Publisher name" },
+        "isNew": { "type": "boolean", "description": "Flag for new arrivals" },
+        "isPopular": { "type": "boolean", "description": "Flag for popular books" }
+      },
+      "required": ["title", "author", "category"]
+    },
+    "ReadingProgress": {
+      "title": "ReadingProgress",
+      "description": "User reading status and saved bookmark pages",
+      "type": "object",
+      "properties": {
+        "bookId": { "type": "string", "description": "Book ID" },
+        "lastReadPage": { "type": "number", "description": "Last page read" },
+        "lastReadTimestamp": { "type": "number", "description": "Timestamp of reading" },
+        "bookmarks": { "type": "string", "description": "Serialized JSON array of bookmarks" }
+      },
+      "required": ["bookId", "lastReadPage"]
+    },
+    "UserFavorite": {
+      "title": "UserFavorite",
+      "description": "User favorite book record",
+      "type": "object",
+      "properties": {
+        "bookId": { "type": "string", "description": "Book ID" },
+        "addedAt": { "type": "number", "description": "Timestamp when added" }
+      },
+      "required": ["bookId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Individual user profile records"
+    },
+    "/books/{bookId}": {
+      "schema": "BookDocument",
+      "description": "Maktaba catalog books readable by all users"
+    },
+    "/users/{userId}/readingProgress/{bookId}": {
+      "schema": "ReadingProgress",
+      "description": "Private user reading progress for each book"
+    },
+    "/users/{userId}/favorites/{bookId}": {
+      "schema": "UserFavorite",
+      "description": "Private user favorite books"
+    }
+  }
+}

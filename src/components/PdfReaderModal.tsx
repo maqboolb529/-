@@ -43,16 +43,18 @@ export const PdfReaderModal: React.FC<PdfReaderModalProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showBookmarksList, setShowBookmarksList] = useState(false);
+  const [viewMode, setViewMode] = useState<'text' | 'pdf'>(book?.pdfUrl ? 'pdf' : 'text');
 
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Sync page if book changes
+  // Sync page & viewMode if book changes
   useEffect(() => {
     if (book) {
       setCurrentPage(book.lastReadPage || 1);
+      setViewMode(book.pdfUrl ? 'pdf' : 'text');
     }
-  }, [book?.id]);
+  }, [book?.id, book?.pdfUrl]);
 
   // Aakhri Safha Yaad Rakhe (auto save last page to database)
   useEffect(() => {
@@ -173,11 +175,32 @@ export const PdfReaderModal: React.FC<PdfReaderModalProps> = ({
           </div>
         </div>
 
-        {/* Center: Protected Badge */}
-        <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/10 dark:bg-white/10 text-xs font-serif">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#c5a059]" />
-          <span>محفوظ پی ڈی ایف ریڈر (آن لائن مطالعہ)</span>
-        </div>
+        {/* Center: View Switcher or Protected Badge */}
+        {book.pdfUrl ? (
+          <div className="flex items-center bg-black/15 dark:bg-white/10 rounded-2xl p-1 text-xs font-serif">
+            <button
+              onClick={() => setViewMode('pdf')}
+              className={`px-3 py-1 rounded-xl transition-all cursor-pointer ${
+                viewMode === 'pdf' ? 'bg-[#c5a059] text-[#0d4a2e] font-bold shadow-xs' : 'opacity-80 hover:opacity-100'
+              }`}
+            >
+              پی ڈی ایف نسخہ
+            </button>
+            <button
+              onClick={() => setViewMode('text')}
+              className={`px-3 py-1 rounded-xl transition-all cursor-pointer ${
+                viewMode === 'text' ? 'bg-[#c5a059] text-[#0d4a2e] font-bold shadow-xs' : 'opacity-80 hover:opacity-100'
+              }`}
+            >
+              سلیس مطالعہ
+            </button>
+          </div>
+        ) : (
+          <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/10 dark:bg-white/10 text-xs font-serif">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#c5a059]" />
+            <span>محفوظ آن لائن ریڈر</span>
+          </div>
+        )}
 
         {/* Left Controls: Bookmark, Font, Day/Night, Fullscreen */}
         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -358,17 +381,26 @@ export const PdfReaderModal: React.FC<PdfReaderModalProps> = ({
 
       {/* Reading Canvas */}
       <main className="flex-1 overflow-hidden relative flex justify-center">
-        <div
-          ref={contentRef}
-          className="flex-1 overflow-y-auto px-4 sm:px-12 py-8 flex justify-center scroll-smooth"
-        >
+        {viewMode === 'pdf' && book.pdfUrl ? (
+          <div className="w-full h-full bg-stone-900 flex flex-col items-center justify-center">
+            <iframe
+              src={`${book.pdfUrl}#page=${currentPage}&toolbar=0&navpanes=0`}
+              title={book.title}
+              className="w-full h-full border-none"
+            />
+          </div>
+        ) : (
           <div
-            className="max-w-2xl w-full min-h-full flex flex-col justify-between"
-            style={{
-              fontSize: `${fontSize}px`,
-              lineHeight: 2.3,
-            }}
+            ref={contentRef}
+            className="flex-1 overflow-y-auto px-4 sm:px-12 py-8 flex justify-center scroll-smooth"
           >
+            <div
+              className="max-w-2xl w-full min-h-full flex flex-col justify-between"
+              style={{
+                fontSize: `${fontSize}px`,
+                lineHeight: 2.3,
+              }}
+            >
             {/* Page Body */}
             <div>
               {currentChapter && (
@@ -395,6 +427,7 @@ export const PdfReaderModal: React.FC<PdfReaderModalProps> = ({
             </div>
           </div>
         </div>
+        )}
 
         {/* Side Next / Prev Floating Arrow Buttons */}
         <button
